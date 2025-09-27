@@ -3,53 +3,44 @@ from socket import *
 # In order to terminate the program
 import sys
 
-
-
 def webServer(port=13331):
   serverSocket = socket(AF_INET, SOCK_STREAM)
   
   #Prepare a server socket
   serverSocket.bind(("", port))
-  
-  #Fill in start
-  serverSocket.listen(1)
-  #Fill in end
+  serverSocket.listen(1)  # Fill in start: listen for connections
+  # Fill in end
 
   while True:
     #Establish the connection
-    
     print('Ready to serve...')
-    connectionSocket, addr = #Fill in start -are you accepting connections?     
-    serverSocket.accept()
-    #Fill in end
+    connectionSocket, addr = serverSocket.accept()  # Fill in start - accepting connections # Fill in end
     
     try:
-      message = #Fill in start -a client is sending you a message   
-      connectionSocket.recv(1024).decode()
-      #Fill in end 
+      message = connectionSocket.recv(1024).decode()  # Fill in start - receive client message # Fill in end
       filename = message.split()[1]
       
       #opens the client requested file. 
-      f = open(filename[1:],     #fill in start              
-      "rb"
-      #fill in end   )
+      f = open(filename[1:], "rb")  # fill in start: open file in binary mode # fill in end
       
-      #This variable can store the headers you want to send for any valid or invalid request.   
+      #This variable can store the headers you want to send for any valid or invalid request. 
+      #What header should be sent for a response that is ok?    
       #Fill in start 
       header = b"HTTP/1.1 200 OK\r\n"
-      outputdata = b"Content-Type: text/html; charset=UTF-8\r\nServer: MyServer\r\nConnection: close\r\n\r\n"
+      #Content-Type is an example on how to send a header as bytes. There are more!
+      outputdata = b"Content-Type: text/html; charset=UTF-8\r\n"
+      #Complete header must end with \r\n\r\n
+      header += outputdata + b"\r\n"
       #Fill in end
                
+      body = b""
       for i in f: #for line in file
-      #Fill in start - append your html file contents 
-        pass  # we are reading as bytes above, so loop not needed
-      #Fill in end 
+        body += i  # Fill in start - append file contents # Fill in end 
         
       #Send the content of the requested file to the client (don't forget the headers you created)!
-      #Send everything as one send command, do not send one line/item at a time!
-
+      #Send everything as one send command
       # Fill in start
-      connectionSocket.send(header + outputdata + f.read())
+      connectionSocket.send(header + body)
       # Fill in end
         
       connectionSocket.close() #closing the connection socket
@@ -58,10 +49,9 @@ def webServer(port=13331):
       # Send response message for invalid request due to the file not being found (404)
       # Remember the format you used in the try: block!
       #Fill in start
-      header = b"HTTP/1.1 404 Not Found\r\n"
-      outputdata = b"Content-Type: text/html; charset=UTF-8\r\nServer: MyServer\r\nConnection: close\r\n\r\n"
-      body = b"<html><body><h1>404 Not Found</h1></body></html>"
-      connectionSocket.send(header + outputdata + body)
+      errorHeader = b"HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n"
+      errorBody = b"<html><head></head><body><h1>404 Not Found</h1></body></html>"
+      connectionSocket.send(errorHeader + errorBody)
       #Fill in end
 
       #Close client socket
@@ -69,7 +59,7 @@ def webServer(port=13331):
       connectionSocket.close()
       #Fill in end
 
-  # DO NOT MOVE OR UNCOMMENT
+  # DO NOT UNCOMMENT THESE WHEN SUBMITTING
   #serverSocket.close()
   #sys.exit()  # Terminate the program after sending the corresponding data
 
